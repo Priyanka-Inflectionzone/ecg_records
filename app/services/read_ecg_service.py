@@ -36,11 +36,13 @@ class EcgService:
         record_name = record.recordName
 
         signal_data, _ = wfdb.rdsamp(record_name, pb_dir=dataset_dir, sampto=1500)
+
         db_signal_data = ECGSignalData(
            record_name=record_name,
            sampling_frequency=_["fs"],
            signals=signal_data.toList()
         )
+
         db.add(db_signal_data)
         db.commit()
         db.refresh(db_signal_data)

@@ -3,7 +3,7 @@ from app.api.api_router import router as api_router
 import os
 
 PORT = os.environ.get("PORT", 3000)
-SERVICE_NAME = os.environ.get("SERVICE_NAME", "Reminder Service")
+SERVICE_NAME = os.environ.get("SERVICE_NAME", "ECG-Records-Creator")
 
 router = APIRouter()
 
