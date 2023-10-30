@@ -10,9 +10,7 @@ from app.database.models.ecg_signals import ECGSignalData
 from app.database.models.ecg_annotations import ECGAnnotation
 
 class EcgService:
-    def read_header(db: Session, record) -> ECGHeadersResponseModel:
-        dataset_dir = record.dirName
-        record_name = record.recordName
+    async def read_header(db: Session, dataset_dir, record_name) -> ECGHeadersResponseModel:
 
         record_headers = wfdb.rdheader(record_name, pb_dir=dataset_dir)
 
@@ -31,16 +29,14 @@ class EcgService:
         db.refresh(db_record)
         return db_record.id
 
-    def read_signals(db: Session, record) -> ECGSignalDataResponse:
-        dataset_dir = record.dirName
-        record_name = record.recordName
+    async def read_signals(db: Session, dataset_dir, record_name) -> ECGSignalDataResponse:
 
         signal_data, _ = wfdb.rdsamp(record_name, pb_dir=dataset_dir, sampto=1500)
 
         db_signal_data = ECGSignalData(
            record_name=record_name,
            sampling_frequency=_["fs"],
-           signals=signal_data.toList()
+           signals=signal_data
         )
 
         db.add(db_signal_data)
@@ -48,25 +44,30 @@ class EcgService:
         db.refresh(db_signal_data)
         return db_signal_data.id
 
-    def read_annotation(self, db: Session, record) -> ECGAnnotationResponse:
-        dataset_dir = record.dirName
-        record_name = record.recordName
-        ext = record.extension
+    async def read_annotation(db: Session, dataset_dir, record_name, extension) -> ECGAnnotationResponse:
         sampling_frequency = 100
 
-        annotations = wfdb.rdann(record_name, extension=ext,  pb_dir=dataset_dir)
+        annotations = wfdb.rdann(record_name, extension=extension,  pb_dir=dataset_dir)
 
         for index in range(len(annotations.sample)):
             time_in_seconds = annotations.sample[index] / sampling_frequency
 
-            db_annotation = ECGAnnotation(
-                record_name=annotations.record_name,  # Replace with the appropriate field
-                time_ms=time_in_seconds * 1000,  # Convert to milliseconds
-                sample=annotations.sample[index],
-                annotation=annotations.symbol[index],
-                sub=annotations.subtype[index],
-                chan=annotations.chan[index],
-                num=annotations.num[index]
+            record_name=annotations.record_name,  # Replace with the appropriate field
+            time_ms=time_in_seconds * 1000,  # Convert to milliseconds
+            sample=annotations.sample[index],
+            annotation=annotations.symbol[index],
+            sub=annotations.subtype[index],
+            chan=annotations.chan[index],
+            num=annotations.num[index]
+
+        db_annotation = ECGAnnotation(
+                record_name=record_name,  # Replace with the appropriate field
+                time=time_ms,  # Convert to milliseconds
+                sample=sample,
+                annotation=annotation,
+                sub=sub,
+                chan=chan,
+                num=num
             )
 
         db.add(db_annotation)

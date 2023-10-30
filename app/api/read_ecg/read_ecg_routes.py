@@ -18,8 +18,12 @@ router = APIRouter(
 @router.post("/read-ecg-data")
 async def read_ecg(record: Request, db_session = Depends(get_db_session)):
     try:
-        data = await read_ecg_(record, db_session)
-        return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Record Converted Successfully"})
+       record_data = await record.json()
+       dataset_dir = record_data.get('dirName')
+       record_name = record_data.get('recordName')
+       extension = record_data.get('extension')
+       data = await read_ecg_(dataset_dir, record_name, extension, db_session)
+       return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Record Converted Successfully"})
     except Exception as e:
         print(e)
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content={"message": "Internal Server Error"})

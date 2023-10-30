@@ -3,8 +3,6 @@ from app.common.logger import logger
 from app.startup.application import app
 from app.config.config import get_settings
 
-
-
 # Run the application server
 if __name__ == "__main__":
     settings = get_settings()
