@@ -1,0 +1,41 @@
+{
+	"info": {
+		"_postman_id": "b2ecf494-ba85-42ba-a25f-497de3a12f34",
+		"name": "ecg_records",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23871612"
+	},
+	"item": [
+		{
+			"name": "read-ecg-data",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"dirName\": \"apnea-ecg/\",\r\n    \"recordName\": \"a05\",\r\n    \"extension\": \"apn\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/v1/ecg/read-ecg-data",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"v1",
+						"ecg",
+						"read-ecg-data"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
