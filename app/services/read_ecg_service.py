@@ -9,7 +9,7 @@ from app.database.models.ecg_headers import ECGHeader
 from app.database.models.ecg_signals import ECGSignalData
 from app.database.models.ecg_annotations import ECGAnnotation
 
-class EcgService:
+class ReadEcgService:
     async def read_header(db: Session, dataset_dir, record_name) -> ECGHeadersResponseModel:
 
         record_headers = wfdb.rdheader(record_name, pb_dir=dataset_dir)
