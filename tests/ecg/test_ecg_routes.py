@@ -1,8 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
-from app import app  # Import your FastAPI app instance
+from app.startup.application import app
 
-# Define your test data here
 test_data = {
     "dirName": "apnea-ecg/",
     "recordName": "a01",
