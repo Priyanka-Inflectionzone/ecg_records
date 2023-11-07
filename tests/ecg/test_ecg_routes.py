@@ -4,7 +4,7 @@ from tests.test_config import test_client
 
 test_data = {
     "dirName": "apnea-ecg/",
-    "recordName": "a01",
+    "recordName": "a05",
     "extension": "apn",
 }
 
@@ -13,4 +13,4 @@ def test_read_ecg(test_client):
                                 headers = { "Content-Type": "application/json"},
                                 json=test_data)
     assert response.status_code == 200
-    assert response.json()["message"] == "Record Converted Successfully"
+    assert response.json()["message"] == "Record Created Successfully"
