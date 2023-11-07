@@ -8,7 +8,7 @@ async def read_ecg_(dataset_dir, record_name, extension, db_session):
        data = await ReadEcgService.read_signals( db_session, dataset_dir, record_name)
        annotations = await ReadEcgService.read_annotation(db_session, dataset_dir, record_name, extension)
        message = "Records created successfully"
-       return {headers, data, annotations}
+       return headers, data, annotations
     except Exception as e:
         raise e
     finally:

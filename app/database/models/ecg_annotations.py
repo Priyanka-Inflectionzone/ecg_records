@@ -6,10 +6,10 @@ class ECGAnnotation(Base):
     __tablename__ = "ecg_annotations"
 
     id = Column(String(36), primary_key=True, index=True, default=generate_uuid4)
-    record_name = Column(String(36), index=True)
-    time = Column(Float)
-    sample = Column(Integer)
-    annotation = Column(String(36))
-    sub = Column(String(36))
-    chan = Column(String(36))
-    num = Column(String(36))
+    RecordName = Column(String(36), index=True)
+    Sample = Column(String(256))
+    Symbol = Column(String(256))
+    Subtype = Column(String(256))
+    Chan = Column(String(256))
+    Num = Column(String(256))
+    AnnotationLength = Column(Integer)

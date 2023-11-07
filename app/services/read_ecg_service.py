@@ -15,65 +15,68 @@ class ReadEcgService:
         record_headers = wfdb.rdheader(record_name, pb_dir=dataset_dir)
 
         db_record = ECGHeader(
-        record_name=record_headers.record_name,
-        num_signals=record_headers.n_sig,
-        signal_names=record_headers.sig_name,
-        sampling_frequency=record_headers.fs,
-        num_samples=record_headers.sig_len,
-        file_name=record_headers.file_name,
-        signal_units=record_headers.units,
+        RecordName=record_headers.record_name,
+        NumberOfSignals=record_headers.n_sig,
+        SignalNames=record_headers.sig_name,
+        SamplingFrequency=record_headers.fs,
+        NumberOfSamples=record_headers.sig_len,
+        FileName=record_headers.file_name,
+        SignalUnits=record_headers.units,
         )
 
         db.add(db_record)
         db.commit()
         db.refresh(db_record)
-        return db_record.id
+        return db_record.__dict__
 
     async def read_signals(db: Session, dataset_dir, record_name) -> ECGSignalDataResponse:
 
-        signal_data, _ = wfdb.rdsamp(record_name, pb_dir=dataset_dir, sampto=1500)
+        signal_data, fields = wfdb.rdsamp(record_name, pb_dir=dataset_dir, sampto=1500)
 
         db_signal_data = ECGSignalData(
-           record_name=record_name,
-           sampling_frequency=_["fs"],
-           signals=signal_data
+           RecordName=record_name,
+           SamplingFrequency=fields["fs"],
+           Signals=signal_data
         )
 
         db.add(db_signal_data)
         db.commit()
         db.refresh(db_signal_data)
-        return db_signal_data.id
+        return db_signal_data.__dict__
 
     async def read_annotation(db: Session, dataset_dir, record_name, extension) -> ECGAnnotationResponse:
-        sampling_frequency = 100
+        try:
+            sampling_frequency = 100
 
-        annotations = wfdb.rdann(record_name, extension=extension,  pb_dir=dataset_dir)
+            annotations = wfdb.rdann(record_name, extension=extension,  pb_dir=dataset_dir, sampto=1500)
 
-        for index in range(len(annotations.sample)):
-            time_in_seconds = annotations.sample[index] / sampling_frequency
+            new_data = {
+                'sample' : annotations.sample.tolist(),
+                'symbol' : annotations.symbol,
+                'subtype': annotations.subtype.tolist(),
+                'chan' : annotations.chan.tolist(),
+                'num': annotations.num.tolist(),
+                'ann_len': annotations.ann_len
+            }
 
-            record_name=annotations.record_name,  # Replace with the appropriate field
-            time_ms=time_in_seconds * 1000,  # Convert to milliseconds
-            sample=annotations.sample[index],
-            annotation=annotations.symbol[index],
-            sub=annotations.subtype[index],
-            chan=annotations.chan[index],
-            num=annotations.num[index]
-
-        db_annotation = ECGAnnotation(
-                record_name=record_name,  # Replace with the appropriate field
-                time=time_ms,  # Convert to milliseconds
-                sample=sample,
-                annotation=annotation,
-                sub=sub,
-                chan=chan,
-                num=num
+            db_annotation = ECGAnnotation(
+                RecordName = record_name,
+                Sample = new_data['sample'],
+                Symbol = new_data['symbol'],
+                Subtype = new_data['subtype'],
+                Chan = new_data['chan'],
+                Num = new_data['num'],
+                AnnotationLength = new_data['ann_len']
             )
 
-        db.add(db_annotation)
-        db.commit()
-        db.refresh(db_annotation)
-        return db_annotation.id
+            db.add(db_annotation)
+            db.commit()
+            db.refresh(db_annotation)
+            return db_annotation.__dict__
+
+        except Exception as e:
+            raise e
+
 
 
 
