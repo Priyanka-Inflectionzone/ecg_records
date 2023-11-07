@@ -1,6 +1,6 @@
 import pytest
-from fastapi.testclient import TestClient
 from app.startup.application import app
+from tests.test_config import test_client
 
 test_data = {
     "dirName": "apnea-ecg/",
@@ -8,11 +8,9 @@ test_data = {
     "extension": "apn",
 }
 
-@pytest.fixture
-def client():
-    return TestClient(app)
-
-def test_read_ecg(client):
-    response = client.post("/read-ecg-data", json=test_data)
+def test_read_ecg(test_client):
+    response = test_client.post("/api/v1/ecg/read-ecg-data",
+                                headers = { "Content-Type": "application/json"},
+                                json=test_data)
     assert response.status_code == 200
     assert response.json()["message"] == "Record Converted Successfully"
