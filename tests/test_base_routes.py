@@ -1,4 +1,6 @@
-from test_config import test_client
+import pytest
+from app.startup.application import app
+from tests.test_config import test_client
 
 def test_root_route(test_client):
     response = test_client.get("/")
